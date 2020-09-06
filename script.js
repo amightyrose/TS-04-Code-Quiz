@@ -2,7 +2,10 @@ var elStartQuizBtn = document.querySelector("#startbutton");
 var elStartScreen = document.querySelector("#startscreen")
 var elQuizDisplay = document.querySelector("#quizdisplay");
 var elTimer = document.querySelector("#timer")
+var elQuestionText = document.querySelector("#questiontext")
+var elAnswerList = document.querySelector("#answerlist")
 
+var quizTimer;
 var intSecondsLeft = 5;
 
 
@@ -36,15 +39,16 @@ function startQuiz(event) {
 
 function startTimer() {
 
-	var quizTimer = setInterval( function() {
+	quizTimer = setInterval( function() {
 
 	intSecondsLeft--;
 	elTimer.textContent = intSecondsLeft;
 
+	console.log(`timer: ${intSecondsLeft}`);
 	if (intSecondsLeft === 0) {
 
 		endQuiz("timeout");
-		clearInterval(quizTimer);
+		// clearInterval(quizTimer);
 		console.log("finished");
 
 	}
@@ -56,9 +60,11 @@ function startTimer() {
 
 function runQuiz() {
 
-	for (let i = 0; i < arrQuestions.length; i++) {
+	var i;
 
-		renderQuestion(i);
+	for (i = 0; i < arrQuestions.length; i++) {
+
+		renderQuestion(arrQuestions[i]);
 
 		if (getResult())
 		{
@@ -71,21 +77,41 @@ function runQuiz() {
 
 	}
 
-	if (i === arrQuestions.length - 1) {
+	if (i === arrQuestions.length) {
 
-		endQuiz("complete");
+		// endQuiz("completed");
 
 	}
 }
 
 
-function renderQuestion() {
+function renderQuestion(objQuestion) {
 	console.log("fnc renderQuestion");
+
+	elQuestionText.textContent = objQuestion.question
+
+	let arrOptions = objQuestion.options;
+
+	for (let i = 0; i < arrOptions.length; i++) {
+
+		let newListItem = document.createElement("li");
+		let newButton = document.createElement("button")
+		newButton.setAttribute("data-index", i);
+		newButton.classList.add("btn")
+		newButton.textContent = arrOptions[i];
+
+		elAnswerList.appendChild(newListItem);
+		newListItem.appendChild(newButton)
+
+	};
+
 }
+
 
 
 function getResult() {
 	console.log("fnc getResult");
+	return "true"
 }
 
 
@@ -100,7 +126,9 @@ function updateTimer() {
 
 
 function endQuiz(reason) {
-	console.log("fnc endQuiz");
+	console.log(`fnc endQuiz: ${reason}`);
+	console.log(`fnc endQuiz: ${intSecondsLeft}`);
+	clearInterval(quizTimer);
 }
 
 elStartQuizBtn.addEventListener("click", startQuiz);
