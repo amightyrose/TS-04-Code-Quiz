@@ -95,7 +95,7 @@ function startTimer() {
 	elTimer.textContent = intSecondsLeft;
 
 	console.log(`timer: ${intSecondsLeft}`);
-	if (intSecondsLeft === 0) {
+	if (intSecondsLeft <= 0) {
 
 		endQuiz("timeout");
 
@@ -150,7 +150,23 @@ function updateScore() {
 
 
 function updateTimer() {
-	console.log("fnc updateTimer");
+	console.log(`fnc updateTimer ${intSecondsLeft}`);
+
+	clearInterval(quizTimer);
+	intSecondsLeft -= 5;
+
+	console.log(`fnc updateTimer ${intSecondsLeft}`);
+	if (intSecondsLeft <= 0) {
+
+		endQuiz("timeout");
+
+	}
+	else {
+
+		startTimer();
+
+	}
+
 }
 
 
@@ -209,7 +225,12 @@ elAnswerList.addEventListener("click", function(event) {
 	}
 
 	elAnswerList.innerHTML = ""
-	renderQuestion();
+
+	if (intSecondsLeft > 0) {
+
+		renderQuestion();
+
+	}
 
 });
 
