@@ -18,31 +18,6 @@ var arrQuestions = [
 		options: ["<script src='script.js'>", "<script href='script.js'>", "<script ref='script.js'>", "<script name='script.js'>"],
 		answer: "0"
 	},
-    {
-        question: "Commonly used data types DO NOT include:",
-        options: ["alerts", "booleans", "numbers", "strings"],
-        answer: "0"
-    },
-    {
-        question: "The condition in an if/else statement is enclosed within __________",
-        options: ["curly braces", "parentheses", "quotes", "square brackets"],
-        answer: "1"
-    },
-    {
-        question: "Arrays in JavaScript can be used to store __________",
-        options: ["booleans", "numbers and strings", "other arrays", "all of the above"],
-        answer: "3"
-    },
-    {
-        question: "String values must be enclosed within __________ when being assigned to variables.",
-        options: ["commas", "curly braces", "quotes", "parentheses"],
-        answer: "2"
-    },
-    {
-        question: "A very useful tool used during development and debugging for printing content to the degugger is:",
-        options: ["JavaScript", "terminal/bash", "for loops", "console.log"],
-        answer: "3"
-	},
 	{
 		question: "True or false: an external JavaScript file must contain a <script> tag.",
 		options: ["true", "false"],
