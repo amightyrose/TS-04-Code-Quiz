@@ -7,6 +7,8 @@ var elAnswerList = document.querySelector("#answerlist")
 
 var quizTimer;
 var intSecondsLeft = 5;
+var intQuestionIndex = 0;
+var strCorrectAnswer;
 
 
 var arrQuestions = [
@@ -14,7 +16,7 @@ var arrQuestions = [
 	{
 		question: "What is the correct syntax for referring to an external script called script.js?",
 		options: ["<script src='script.js'>", "<script href='script.js'>", "<script ref='script.js'>", "<script name='script.js'>"],
-		answer: 0
+		answer: "0"
 	}
 
 ];
@@ -31,7 +33,7 @@ function startQuiz(event) {
 	elQuizDisplay.style.display = "block";
 
 	startTimer();
-	runQuiz();
+	renderQuestion();
 
 }
 
@@ -48,8 +50,6 @@ function startTimer() {
 	if (intSecondsLeft === 0) {
 
 		endQuiz("timeout");
-		// clearInterval(quizTimer);
-		console.log("finished");
 
 	}
 
@@ -58,60 +58,41 @@ function startTimer() {
 }
 
 
-function runQuiz() {
 
-	var i;
-
-	for (i = 0; i < arrQuestions.length; i++) {
-
-		renderQuestion(arrQuestions[i]);
-
-		if (getResult())
-		{
-			updateScore();
-		}
-		else
-		{
-			updateTimer();
-		}
-
-	}
-
-	if (i === arrQuestions.length) {
-
-		// endQuiz("completed");
-
-	}
-}
-
-
-function renderQuestion(objQuestion) {
+function renderQuestion() {
 	console.log("fnc renderQuestion");
 
-	elQuestionText.textContent = objQuestion.question
+	if (intQuestionIndex < arrQuestions.length) {
 
-	let arrOptions = objQuestion.options;
+		let objQuestion = arrQuestions[intQuestionIndex]
+		strCorrectAnswer = objQuestion.answer
 
-	for (let i = 0; i < arrOptions.length; i++) {
+		elQuestionText.textContent = objQuestion.question
 
-		let newListItem = document.createElement("li");
-		let newButton = document.createElement("button")
-		newButton.setAttribute("data-index", i);
-		newButton.classList.add("btn")
-		newButton.textContent = arrOptions[i];
+		let arrOptions = objQuestion.options;
 
-		elAnswerList.appendChild(newListItem);
-		newListItem.appendChild(newButton)
+		for (let i = 0; i < arrOptions.length; i++) {
 
-	};
+			let newListItem = document.createElement("li");
+			newListItem.setAttribute("data-index", i);
+			let newButton = document.createElement("button")
+			newButton.classList.add("btn")
+			newButton.textContent = arrOptions[i];
 
-}
+			elAnswerList.appendChild(newListItem);
+			newListItem.appendChild(newButton)
 
+		};
 
+		intQuestionIndex++;
 
-function getResult() {
-	console.log("fnc getResult");
-	return "true"
+	}
+	else {
+
+		endQuiz("complete");
+
+	}
+
 }
 
 
@@ -131,7 +112,40 @@ function endQuiz(reason) {
 	clearInterval(quizTimer);
 }
 
+
 elStartQuizBtn.addEventListener("click", startQuiz);
+
+
+elAnswerList.addEventListener("click", function(event) {
+
+	console.log("button clicked");
+
+	let element = event.target;
+	let selectedAnswer = "";
+
+	if (element.matches("button")) {
+
+		selectedAnswer = element.parentElement.getAttribute("data-index");
+
+	}
+
+	console.log(selectedAnswer);
+
+	if (selectedAnswer === strCorrectAnswer) {
+
+		updateScore();
+
+	}
+	else {
+
+		updateTimer();
+
+	}
+
+	elAnswerList.innerHTML = ""
+	renderQuestion();
+
+});
 
 
 
