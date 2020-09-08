@@ -1,12 +1,16 @@
 var elStartQuizBtn = document.querySelector("#startbutton");
 var elStartScreen = document.querySelector("#startscreen")
 var elQuizDisplay = document.querySelector("#quizdisplay");
-var elTimer = document.querySelector("#timer")
-var elQuestionText = document.querySelector("#questiontext")
-var elAnswerList = document.querySelector("#answerlist")
+var elTimer = document.querySelector("#timer");
+var elQuestionText = document.querySelector("#questiontext");
+var elAnswerList = document.querySelector("#answerlist");
+var elEndScreen = document.querySelector("#endscreen");
+var elEndBanner = document.querySelector("#endbanner");
+var elEndMessage = document.querySelector("#endmessage");
+
 
 var quizTimer;
-var intSecondsLeft = 60;
+var intSecondsLeft = 30;
 var intQuestionIndex = 0;
 var strCorrectAnswer;
 
@@ -154,6 +158,24 @@ function endQuiz(reason) {
 	console.log(`fnc endQuiz: ${reason}`);
 	console.log(`fnc endQuiz: ${intSecondsLeft}`);
 	clearInterval(quizTimer);
+
+	if (reason === "timeout") {
+
+		elEndBanner.textContent = "Oh no!";
+		elEndMessage.textContent = "You ran out of time.";
+
+	}
+	else {
+
+		elEndBanner.textContent = "Congratulations!";
+		elEndMessage.textContent = "You completed the quiz.";
+
+	}
+
+	elQuizDisplay.style.display = "none";
+	elEndScreen.style.display = "block";
+
+
 }
 
 
@@ -190,7 +212,5 @@ elAnswerList.addEventListener("click", function(event) {
 	renderQuestion();
 
 });
-
-
 
 
