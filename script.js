@@ -8,14 +8,21 @@ var elEndScreen = document.querySelector("#endscreen");
 var elEndBanner = document.querySelector("#endbanner");
 var elEndMessage = document.querySelector("#endmessage");
 var elFinalScore = document.querySelector("#finalscore");
+var elSaveScoreForm = document.querySelector("#savescore");
+var elInputInitials = document.querySelector("#inputinitials");
 
+var objHighScores = JSON.parse(localStorage.getItem("highscores"));
 
 var quizTimer;
-var intSecondsLeft = 30;
+var intSecondsLeft = 5;
 var intScore;
 var intFinalScore;
 var intQuestionIndex = 0;
 var strCorrectAnswer;
+var objHighScores = {};
+var arrUserHighScores = [];
+
+
 
 
 var arrQuestions = [
@@ -83,8 +90,11 @@ function startQuiz(event) {
 	elStartScreen.style.display = "none";
 	elQuizDisplay.style.display = "block";
 
+	// Clear some variables in case this is not the first time the quiz has been run in the session
 	intScore = 0;
 	intFinalScore = 0;
+	objHighScores = {};
+	arrUserHighScores = [];
 	startTimer();
 	renderQuestion();
 
@@ -191,6 +201,53 @@ function endQuiz(reason) {
 }
 
 
+function getSavedScores() {
+	console.log(`fnc getSavedScores`);
+
+	var savedScores = localStorage.getItem("highscores")
+	console.log(`fnc getSavedScores: ${savedScores}`);
+
+	if (savedScores !== null) {
+
+		console.log(`fnc getSavedScores: parsing object`);
+		objHighScores = JSON.parse(savedScores);
+
+	}
+	console.log(`fnc getSavedScores ${objHighScores}`);
+
+}
+
+
+function getUserHighScores(userInitials) {
+
+	// Check the objHighScores object to see if an entry exists for this user.
+	// If so, add it to the arrUserHighScores array
+
+	if (userInitials in objHighScores) {
+
+		arrUserHighScores = objHighScores[userInitials];
+		console.log(`fnc getUserHighScores ${arrUserHighScores}`);
+
+	}
+
+}
+
+
+function saveHighScores() {
+	console.log(`fnc saveHighScores`);
+
+	let strHighScores = JSON.stringify(objHighScores);
+	console.log(strHighScores);
+	localStorage.setItem("highscores", strHighScores);
+
+}
+
+
+function renderHighScores() {
+	console.log(`fnc renderHighScores`);
+}
+
+
 elStartQuizBtn.addEventListener("click", startQuiz);
 
 
@@ -220,7 +277,9 @@ elAnswerList.addEventListener("click", function(event) {
 
 	}
 
+
 	elAnswerList.innerHTML = "";
+
 
 	if (intQuestionIndex === arrQuestions.length) {
 
@@ -243,7 +302,30 @@ elAnswerList.addEventListener("click", function(event) {
 	}
 
 
-
 });
 
 
+elSaveScoreForm.addEventListener("submit", function (event) {
+
+	event.preventDefault();
+
+	console.log("form submitted");
+
+	var strInitials = elInputInitials.value.trim();
+
+	getSavedScores();
+	console.log(`form saved scores:`);
+	console.log(objHighScores);
+
+	getUserHighScores(strInitials);
+
+	arrUserHighScores.push(intFinalScore);
+	console.log(`adding new score ${arrUserHighScores}`);
+	objHighScores[strInitials] = arrUserHighScores;
+
+	console.log(`form saved scores`);
+	console.log(objHighScores);
+
+	saveHighScores();
+
+});
