@@ -7,10 +7,13 @@ var elAnswerList = document.querySelector("#answerlist");
 var elEndScreen = document.querySelector("#endscreen");
 var elEndBanner = document.querySelector("#endbanner");
 var elEndMessage = document.querySelector("#endmessage");
+var elFinalScore = document.querySelector("#finalscore");
 
 
 var quizTimer;
 var intSecondsLeft = 30;
+var intScore;
+var intFinalScore;
 var intQuestionIndex = 0;
 var strCorrectAnswer;
 
@@ -54,7 +57,7 @@ var arrQuestions = [
 	},
 	{
 		question: "How do you call a function named 'someFunction'?",
-		options: ["call function someFunction()", "call someFunction()", "someFunction"],
+		options: ["call function someFunction()", "call someFunction()", "someFunction()"],
 		answer: "2"
 	},
 	{
@@ -80,6 +83,8 @@ function startQuiz(event) {
 	elStartScreen.style.display = "none";
 	elQuizDisplay.style.display = "block";
 
+	intScore = 0;
+	intFinalScore = 0;
 	startTimer();
 	renderQuestion();
 
@@ -106,46 +111,38 @@ function startTimer() {
 }
 
 
-
 function renderQuestion() {
 	console.log("fnc renderQuestion");
 
-	if (intQuestionIndex < arrQuestions.length) {
+	let objQuestion = arrQuestions[intQuestionIndex]
+	strCorrectAnswer = objQuestion.answer
 
-		let objQuestion = arrQuestions[intQuestionIndex]
-		strCorrectAnswer = objQuestion.answer
+	elQuestionText.textContent = objQuestion.question
 
-		elQuestionText.textContent = objQuestion.question
+	let arrOptions = objQuestion.options;
 
-		let arrOptions = objQuestion.options;
+	for (let i = 0; i < arrOptions.length; i++) {
 
-		for (let i = 0; i < arrOptions.length; i++) {
+		let newListItem = document.createElement("li");
+		newListItem.setAttribute("data-index", i);
+		let newButton = document.createElement("button")
+		newButton.classList.add("btn")
+		newButton.textContent = arrOptions[i];
 
-			let newListItem = document.createElement("li");
-			newListItem.setAttribute("data-index", i);
-			let newButton = document.createElement("button")
-			newButton.classList.add("btn")
-			newButton.textContent = arrOptions[i];
+		elAnswerList.appendChild(newListItem);
+		newListItem.appendChild(newButton)
 
-			elAnswerList.appendChild(newListItem);
-			newListItem.appendChild(newButton)
+	};
 
-		};
-
-		intQuestionIndex++;
-
-	}
-	else {
-
-		endQuiz("complete");
-
-	}
+	intQuestionIndex++;
 
 }
 
 
 function updateScore() {
-	console.log("fnc updateScore");
+	console.log(`fnc updateScore ${intScore}`);
+	intScore += 5;
+	console.log(`fnc updateScore ${intScore}`);
 }
 
 
@@ -156,12 +153,7 @@ function updateTimer() {
 	intSecondsLeft -= 5;
 
 	console.log(`fnc updateTimer ${intSecondsLeft}`);
-	if (intSecondsLeft <= 0) {
-
-		endQuiz("timeout");
-
-	}
-	else {
+	if (intSecondsLeft > 0) {
 
 		startTimer();
 
@@ -177,16 +169,20 @@ function endQuiz(reason) {
 
 	if (reason === "timeout") {
 
+		intFinalScore = intScore;
 		elEndBanner.textContent = "Oh no!";
 		elEndMessage.textContent = "You ran out of time.";
 
 	}
 	else {
 
+		intFinalScore = intScore + Math.max(0, intSecondsLeft);
 		elEndBanner.textContent = "Congratulations!";
 		elEndMessage.textContent = "You completed the quiz.";
 
 	}
+
+	elFinalScore.textContent = intFinalScore;
 
 	elQuizDisplay.style.display = "none";
 	elEndScreen.style.display = "block";
@@ -224,13 +220,29 @@ elAnswerList.addEventListener("click", function(event) {
 
 	}
 
-	elAnswerList.innerHTML = ""
+	elAnswerList.innerHTML = "";
 
-	if (intSecondsLeft > 0) {
+	if (intQuestionIndex === arrQuestions.length) {
 
-		renderQuestion();
+		endQuiz("complete");
 
 	}
+	else {
+
+		if (intSecondsLeft > 0) {
+
+			renderQuestion();
+
+		}
+		else {
+
+			endQuiz("timeout");
+
+		}
+
+	}
+
+
 
 });
 
