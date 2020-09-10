@@ -1,19 +1,19 @@
 
 
-ol {
+ul {
 
-	list-style-type: lower-alpha;
+	list-style-type: none;
 }
 
 
-#quizdisplay {
+#quizdisplay, #endscreen, #highscores, #userselect {
 
 	display: none;
 
 }
 
-#endscreen {
+#alltimetable {
 
-	display: none;
+	list-style-type: none;
 
 }
