@@ -91,8 +91,32 @@ var arrQuestions = [
 		question: "Which operator is used to assign a value to a variable?",
 		options: ["*", ">", "=", ":"],
 		answer: "2"
-	}
-
+	},
+    {
+        question: "Commonly used data types DO NOT include:",
+        options: ["alerts", "booleans", "numbers", "strings"],
+        answer: "0"
+    },
+    {
+        question: "The condition of an if/else statement is enclosed within __________",
+        options: ["curly braces", "parentheses", "quotes", "square brackets"],
+        answer: "1"
+    },
+    {
+        question: "Arrays in JavaScript can be used to store __________",
+        options: ["booleans", "numbers and strings", "other arrays", "all of the above"],
+        answer: "3"
+    },
+    {
+        question: "String values must be enclosed within __________ when being assigned to variables.",
+        options: ["commas", "curly braces", "quotes", "parentheses"],
+        answer: "2"
+    },
+    {
+        question: "A very useful tool used during development for printing content to the debugger is:",
+        options: ["JavaScript", "terminal/bash", "for loops", "console.log"],
+        answer: "3"
+    }
 ];
 
 
