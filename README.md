@@ -1,6 +1,6 @@
 # TS-04-Code-Quiz
 
-### A simple web-based quiz game.
+### A simple web-based quiz game
 
 
 ## Introduction
