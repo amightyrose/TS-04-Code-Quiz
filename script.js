@@ -39,7 +39,7 @@ var arrObjUsers = [];
 
 
 
-
+// Array of quiz questions.
 var arrQuestions = [
 
 	{
@@ -97,12 +97,14 @@ var arrQuestions = [
 
 
 
+// Function to show the introduction screen.
 function renderStartScreen() {
 
-	elStartScreen.style.display = "block";
-	elCurrentScreen = elStartScreen;
 
-	// Clear some variables in case this is not the first time the quiz has been run in the session
+	elStartScreen.style.display = "block";	// Show the start screen.
+	elCurrentScreen = elStartScreen;		// Set the elCurrentScreen variable so we can hide it later.
+
+	// Clear some variables in case this is not the first time the quiz has been run in the session.
 	intSecondsLeft = intTotalTime;
 	intScore = 0;
 	intFinalScore = 0;
@@ -112,31 +114,39 @@ function renderStartScreen() {
 	strInitials = "";
 	elAnswerList.innerHTML = "";
 
+
 }
 
 
+// Hides the start screen, starts the timer and renders the first question.
 function startQuiz() {
 
-	elTimer.textContent = intSecondsLeft;
-	elCurrentScreen.style.display = "none";
-	elQuizDisplay.style.display = "block";
 
-	elCurrentScreen = elQuizDisplay;
+	elTimer.textContent = intSecondsLeft;	// Display seconds left on the screen.
+	elCurrentScreen.style.display = "none";	// Hide the current screen.
+	elQuizDisplay.style.display = "block";	// Show the quiz question screen.
+	elCurrentScreen = elQuizDisplay;		// Update the elCurrentScreen variable.
 
+	// Start the countdown timer.
 	startTimer();
+
+	// Call renderQuestion to show the first question.
 	renderQuestion();
+
 
 }
 
 
+// Start the countdown timer.
 function startTimer() {
 
-	quizTimer = setInterval( function() {
 
+	quizTimer = setInterval( function() {
 	intSecondsLeft--;
 	elTimer.textContent = intSecondsLeft;
 
-	console.log(`timer: ${intSecondsLeft}`);
+
+	// If the timer gets to 0 or less, call the endQuiz function with "timeout" as the reason for ending.
 	if (intSecondsLeft <= 0) {
 
 		endQuiz("timeout");
@@ -145,67 +155,90 @@ function startTimer() {
 
 	}, 1000);
 
+
 }
 
 
+// Show the current question on the screen.
 function renderQuestion() {
-	console.log("fnc renderQuestion");
 
+
+	// Get the object representing the current question.
 	let objQuestion = arrQuestions[intQuestionIndex]
+
+	// Populate the strCorrectAnswer variable from the object.
 	strCorrectAnswer = objQuestion.answer
 
+	// Get the question and display.
 	elQuestionText.textContent = objQuestion.question
 
+	// Get the array of possible answers from the object.
 	let arrOptions = objQuestion.options;
 
+	// Loop through the possible answers and add new html elements to the DOM.
 	for (let i = 0; i < arrOptions.length; i++) {
 
 		let newListItem = document.createElement("li");
-		newListItem.setAttribute("data-index", i);
+		newListItem.setAttribute("data-index", i);	// Add the data-index attribute to each question for checking the answer later.
 		let newButton = document.createElement("button")
 		newButton.classList.add("list-group-item", "list-group-item-action")
 		newButton.textContent = arrOptions[i];
 
+		// Append the new option to the list.
 		elAnswerList.appendChild(newListItem);
 		newListItem.appendChild(newButton)
 
 	};
 
+	// Update the intQuestionIndex so the next time this function is called we'll get the next question in the list.
 	intQuestionIndex++;
 
+
 }
 
 
+// Add 5 to the score on a correct answer.
 function updateScore() {
-	console.log(`fnc updateScore ${intScore}`);
+
 	intScore += 5;
-	console.log(`fnc updateScore ${intScore}`);
+
 }
 
 
+// Take 5 seconds off the timer on a wrong answer.
 function updateTimer() {
-	console.log(`fnc updateTimer ${intSecondsLeft}`);
 
+
+	// First stop the timer.
 	clearInterval(quizTimer);
+
+	// Take 5 seconds off the time left.
 	intSecondsLeft -= 5;
 
-	console.log(`fnc updateTimer ${intSecondsLeft}`);
+	// If there's still time left, restart the timer with the new value of intSecondsLeft.
 	if (intSecondsLeft > 0) {
 
 		startTimer();
 
 	}
 
+
 }
 
 
+// Do some stuff when the quiz has ended. This function has to be called with an argument representing what ended the quiz.
+// Either "timeout" (if the timer got down to 0 or less) or "complete" (if all questions were answered).
 function endQuiz(reason) {
-	console.log(`fnc endQuiz: ${reason}`);
-	console.log(`fnc endQuiz: ${intSecondsLeft}`);
+
+
+	// First stop the timer.
 	clearInterval(quizTimer);
 
+
+	// Things to do if the quiz ended because time ran out.
 	if (reason === "timeout") {
 
+		// Set the final score and display the end message.
 		intFinalScore = intScore;
 		elEndBanner.textContent = "Oh no!";
 		elEndMessage.textContent = "You ran out of time.";
@@ -213,15 +246,20 @@ function endQuiz(reason) {
 	}
 	else {
 
+		// Add time remaining to get the final score and display the end message.
 		intFinalScore = intScore + Math.max(0, intSecondsLeft);
 		elEndBanner.textContent = "Congratulations!";
 		elEndMessage.textContent = "You completed the quiz.";
 
 	}
 
+	// Display final score.
 	elFinalScore.textContent = intFinalScore;
+
+	// Reset the initials input field in case there's something left from a previous run.
 	elInputInitials.value = "";
 
+	// Hid the quiz question screen, display the final screen and update elCurrentScreen variable.
 	elCurrentScreen.style.display = "none";
 	elEndScreen.style.display = "block";
 	elCurrentScreen = elEndScreen;
@@ -230,20 +268,21 @@ function endQuiz(reason) {
 }
 
 
-// Retrieves "highscores" from localstorage if they exist and populates objHighScores.
+// Retrieves "highscores" from localstorage if they exist and populates objHighScores. If there is no entry in
+// localstorage objHighScores remains an empty object.
 function getSavedScores() {
-	console.log(`fnc getSavedScores`);
 
+
+	// Try and get item from storage.
 	savedScores = localStorage.getItem("highscores")
-	console.log(`fnc getSavedScores: ${savedScores}`);
 
+	// If it returns something, parse it to an object.
 	if (savedScores !== null) {
 
-		console.log(`fnc getSavedScores: parsing object`);
 		objHighScores = JSON.parse(savedScores);
 
 	}
-	console.log(`fnc getSavedScores ${objHighScores}`);
+
 
 }
 
@@ -251,59 +290,65 @@ function getSavedScores() {
 // Checks objHighScores for an entry matching userInitials and populates arrUserHighScores.
 function getUserHighScores(userInitials) {
 
-	// Check the objHighScores object to see if an entry exists for this user.
-	// If so, add it to the arrUserHighScores array
 
+	// Check the objHighScores object to see if an entry exists for this user.
+	// If so, add it to the arrUserHighScores array. If not the array remains empty.
 	if (userInitials in objHighScores) {
 
 		arrUserHighScores = objHighScores[userInitials];
-		console.log(`fnc getUserHighScores ${arrUserHighScores}`);
 
 	}
 
+
 }
 
 
-// Stringify objHighScores then save it in localstorage.
+// Stringify objHighScores then save it in localstorage. Called when the submit button is clicked.
 function saveHighScores() {
-	console.log(`fnc saveHighScores`);
+
 
 	let strHighScores = JSON.stringify(objHighScores);
-	console.log(strHighScores);
 	localStorage.setItem("highscores", strHighScores);
+
 
 }
 
 
-// Get scores from storage and render high score tables.
+// Get scores from storage and render high score tables. Called with an argument that represents the user initials that were input.
 function renderHighScores(user) {
-	console.log(`fnc renderHighScores`);
 
-	elCurrentScreen.style.display = "none";
-	elHighScores.style.display = "block";
-	elCurrentScreen = elHighScores;
 
-	// Clear the existing lists.
+	// Clear the existing lists by removing the li elements.
 	let scoreEntries = document.querySelectorAll(".score-item");
 
 	scoreEntries.forEach(liNode => {
 		liNode.remove();
 	});
 
-	// Call getSavedScores to get the objHighScores object.
+
+	// Call getSavedScores to populate the objHighScores object.
 	getSavedScores();
+
 
 	// Call getUserHighScores to pull user's scores from objHighScores and populate arrUserHighScores.
 	getUserHighScores(user);
 
 
-	// Call the rendering functions to add scores to the list and display.
+	// Call the rendering functions to add scores to the lists and display.
 	renderAllTimeScores();
 	renderUserScores(user);
 
-	// Reset the score variables.
+
+	// Hide the current screen, show the high scores screen and update the elCurrentScreen variable.
+	elCurrentScreen.style.display = "none";
+	elHighScores.style.display = "block";
+	elCurrentScreen = elHighScores;
+
+
+	// Reset the score variables so they don't cause problems later.
 	arrUserHighScores = [];
 	objHighScores = {};
+
 
 }
 
@@ -314,6 +359,7 @@ function renderAllTimeScores() {
 
 	// Get the properties from objHighScores which will give us a list of users that have stored scores.
 	arrObjUsers = Object.getOwnPropertyNames(objHighScores);
+
 
 	// Initialise a new array that will hold each score as an object. Each object will have a 'User' and 'Score' key/value pair.
 	let arrScoreList = [];
@@ -329,7 +375,7 @@ function renderAllTimeScores() {
 		let arrScores = objHighScores[strUser];
 
 		// For each score in the user's score array, create an object {User: initials, Score: score}. Add each object
-		// to the new array. We now have one big array with every score in it and the user that it belongs to.
+		// to the new arrScoreList array.
 		arrScores.forEach(score => {
 
 			let strNewObject = `{"User": "${strUser}", "Score": "${score}"}`;
@@ -340,6 +386,8 @@ function renderAllTimeScores() {
 
 	}
 
+
+	// We now have one big array with every score in it and the user that it belongs to.
 	// Sort the new array by score. This is in ascending order because I don't know how to sort it descending.
 	arrScoreList.sort(function (a, b) {
 
@@ -347,21 +395,22 @@ function renderAllTimeScores() {
 
 	});
 
+
 	// Reverse the array so the entries are in descending order.
 	arrScoreList.reverse();
 
-	console.log(`fnc renderHighScores`);
-	console.log(arrScoreList);
 
-	// Loop through the array and add each user/score pair to the high score list by creating new <li> elements and appending.
+	// Loop through the array and add each user/score pair to the high score table by creating new <li> elements and appending.
+	// Wrap the user's initials in an <a> tag so we click on it to view their score.
 	for (let i = 0; i < arrScoreList.length; i++) {
 
 		let newScoreListItem = document.createElement("li");
 		newScoreListItem.classList.add("list-group-item", "score-item");
-		newScoreListItem.textContent = `${(arrScoreList[i]).User}: ${(arrScoreList[i].Score)}`;
+		newScoreListItem.innerHTML = `<a href="#">${(arrScoreList[i]).User}</a>: ${(arrScoreList[i].Score)}`;
 		elAllTimeList.appendChild(newScoreListItem);
 
 	}
+
 
 }
 
@@ -373,6 +422,7 @@ function renderUserScores(user) {
 	// Put the user's name in the table header.
 	elUserName.textContent = user
 
+
 	// Sort the user's high score array by score.
 	arrUserHighScores.sort(function (a, b) {
 
@@ -380,9 +430,10 @@ function renderUserScores(user) {
 
 	});
 
+
 	// Reverse the user's high score array so it's sorted descending.
 	arrUserHighScores.reverse();
-	console.log(arrUserHighScores);
+
 
 	// For each score, create an <li> element and append it to the list.
 	for (i = 0; i < arrUserHighScores.length; i++) {
@@ -393,6 +444,7 @@ function renderUserScores(user) {
 		elUserScoreList.appendChild(newScoreListItem);
 
 	}
+
 
 }
 
@@ -413,7 +465,6 @@ elStartQuizBtn.addEventListener("click", function (event) {
 // Handle click when an answer is selected.
 elAnswerList.addEventListener("click", function (event) {
 
-	console.log("button clicked");
 
 	// Get the answer that was clicked and retrieve its 'data-index'.
 	let element = event.target;
@@ -425,7 +476,6 @@ elAnswerList.addEventListener("click", function (event) {
 
 	}
 
-	console.log(selectedAnswer);
 
 	// Check the data-index against the 'answer' value of the question's object.
 	if (selectedAnswer === strCorrectAnswer) {
@@ -473,23 +523,21 @@ elAnswerList.addEventListener("click", function (event) {
 });
 
 
-// Save user's score and initials.
+// Save user's score and initials when the form is submitted.
 elSaveScoreForm.addEventListener("submit", function (event) {
+
 
 	event.preventDefault();
 
-	console.log("form submitted");
 
-	// Get the value that was entered for the initials.
+	// Get the value that was entered for the initials and make it uppercase.
 	strInitials = elInputInitials.value.trim();
 	strInitials = strInitials.toUpperCase();
 
 
 	// Call getSavedScores to retrieve scores from localstorage if they exist. If they do, objHighScores is populated, otherwise
-	// objHighScores remains and empty object.
+	// objHighScores remains an empty object.
 	getSavedScores();
-	console.log(`form saved scores:`);
-	console.log(objHighScores);
 
 
 	// Call getUserHighScores to check if objHighScores has an entry for this user. If not, arrUserHighScores remains empty.
@@ -498,11 +546,7 @@ elSaveScoreForm.addEventListener("submit", function (event) {
 
 	// Add the new score to the arrUserHighScores array, then put this array back to the objHighScores object.
 	arrUserHighScores.push(intFinalScore);
-	console.log(`adding new score ${arrUserHighScores}`);
 	objHighScores[strInitials] = arrUserHighScores;
-
-	console.log(`form saved scores`);
-	console.log(objHighScores);
 
 
 	// Call saveHighScores to save in localstorage then clear arrUserHighScores and objHighScores.
@@ -515,15 +559,15 @@ elSaveScoreForm.addEventListener("submit", function (event) {
 	// are displayed.
 	renderHighScores(strInitials);
 
+
 });
 
 
 // Clear the high scores from localstorage when the 'Clear' button is clicked.
 elClearBtn.addEventListener("click", function (event) {
 
-	event.preventDefault();
 
-	console.log(`clear button clicked`);
+	event.preventDefault();
 
 	// Prompt the user to confirm they want to clear the scores.
 	let boolClearScores = confirm("Are you sure you want to clear the high score tables?");
@@ -567,5 +611,21 @@ elViewHighScoresBtn.addEventListener("click", function (event) {
 
 	renderHighScores();
 	elUserName.textContent = "User";
+
+});
+
+
+// Display a user's high scores when their initials are clicked in the all time high scores table.
+elAllTimeTable.addEventListener("click", function (event) {
+
+
+	// If an anchor was clicked, get the initials.
+	let element = event.target;
+
+	if (element.matches("a")) {
+
+		renderHighScores(element.textContent);
+
+	}
 
 });
